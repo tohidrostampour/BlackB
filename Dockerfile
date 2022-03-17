@@ -1,16 +1,20 @@
 # pull official base image
-FROM python:3.10-alpine
+FROM python:3.10-slim-buster
 
-WORKDIR /code
+# set work directory
+WORKDIR /app
 
-COPY ./requirements.txt /code
+# set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
-
-RUN pip3 install -r requirements.txt
-
-EXPOSE 8000
-
-COPY . /code
-
+# copy requirements file
+COPY ./Pipfile .
+COPY ./Pipfile.lock .
 
 # install dependencies
+RUN python3 -m pip install pipenv
+RUN pipenv install --system --deploy --ignore-pipfile
+
+# copy project
+COPY . .
