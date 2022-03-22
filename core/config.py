@@ -14,10 +14,9 @@ class Settings:
 
     POSTGRES_USER: str = os.getenv("POSTGRES_USER")
     POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
-    POSTGRES_HOST: str = os.getenv("POSTGRES_SERVER", "localhost")
-    POSTGRES_PORT: str = os.getenv("POSTGRES_PORT", 5432)  # default postgres port is 5432
-    POSTGRES_DATABASE: str = os.getenv("POSTGRES_DB", "tdd")
-    DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DATABASE}"
+    POSTGRES_HOST: str = os.getenv("POSTGRES_HOST")  # default postgres port is 5432
+    POSTGRES_DATABASE: str = os.getenv("POSTGRES_DATABASE")
+    DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{5432}/{POSTGRES_DATABASE}"
 
 
 settings = Settings()
