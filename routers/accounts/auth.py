@@ -1,17 +1,15 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, status
 
 from app.accounts.schemas import user
-from db.database import get_db
-from app.accounts.services.user import SQLAlchemyRepository
-
+from app.accounts.services.user_service import UserService
 
 router = APIRouter(
     prefix='/auth'
 )
 
 
-@router.post('/register')
-async def register(request: user.UserCreateInput, db: Session = Depends(get_db)):
-    repo = SQLAlchemyRepository(db)
-    return repo.create(request)
+@router.post('/register', response_model=user.UserReadModel, status_code=status.HTTP_201_CREATED)
+async def register(request: user.UserCreateInput, service: UserService = Depends(UserService)):
+    return service.create(request)
+
+
