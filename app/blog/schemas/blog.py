@@ -17,10 +17,17 @@ class BaseTag(BaseModel):
 
 
 class PostCreateIn(BasePost):
-    pass
+    title: str
+    body: str
+    file: AnyUrl
 
 
 class PostReadOut(BasePost):
+    id: int
+    title: str
+    body: str
+    file: AnyUrl
+
     class Config:
         orm_mode = True
 
