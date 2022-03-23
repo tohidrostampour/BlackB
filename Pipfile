@@ -33,6 +33,7 @@ PyYAML = "==6.0"
 SQLAlchemy = "==1.4.32"
 pytest = "*"
 requests = "*"
+alembic = "*"
 
 [dev-packages]
 
