@@ -43,3 +43,28 @@ def test_get_all(client):
     assert response.status_code == status.HTTP_200_OK
     assert response.json()[0]['title'] == data_1['title']
     assert response.json()[1]['title'] == data_2['title']
+
+
+def test_update_post(client):
+    client.post(POST_CREATION, json.dumps(data_1))
+
+    data_1.update(title='testing update', body='testing update body text')
+    print(data_1)
+    client.put('/blog/1', json.dumps(data_1))
+
+    response = client.get('/blog/1')
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json()['title'] == data_1['title']
+
+
+def test_delete_post(client):
+    client.post(POST_CREATION, json.dumps(data_1))
+
+    response = client.delete('blog/1')
+
+    assert response.status_code == status.HTTP_202_ACCEPTED
+
+    get_result = client.get('blog/1')
+
+    assert get_result.status_code == status.HTTP_404_NOT_FOUND
