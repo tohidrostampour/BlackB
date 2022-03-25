@@ -1,7 +1,8 @@
 import os
 from dotenv import load_dotenv
-
 from pathlib import Path
+
+import cloudinary
 
 env_path = Path('.') / '.env'
 
@@ -14,9 +15,16 @@ class Settings:
 
     POSTGRES_USER: str = os.getenv("POSTGRES_USER")
     POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
-    POSTGRES_HOST: str = os.getenv("POSTGRES_HOST")  # default postgres port is 5432
+    POSTGRES_HOST: str = os.getenv("POSTGRES_HOST", 5432)
     POSTGRES_DATABASE: str = os.getenv("POSTGRES_DATABASE")
     DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{5432}/{POSTGRES_DATABASE}"
+    cloudinary.config(
+        cloud_name=os.getenv("CLOUD_NAME"),
+        api_key=os.getenv("API_KEY"),
+        api_secret=os.getenv("API_SECRET"),
+
+    )
 
 
 settings = Settings()
+
