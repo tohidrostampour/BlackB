@@ -1,7 +1,10 @@
-from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi import APIRouter, Depends, status, HTTPException, UploadFile, Form
 
 from app.blog.schemas import PostReadOut, PostCreateIn, CommentCreateIn
 from app.blog.services import PostService, CommentService
+
+import cloudinary
+import cloudinary.uploader
 
 router = APIRouter(
     prefix='/blog'
@@ -9,9 +12,18 @@ router = APIRouter(
 
 
 @router.post('/create', response_model=PostReadOut, status_code=status.HTTP_201_CREATED)
-async def create_post(request: PostCreateIn, service: PostService = Depends(PostService)):
+async def create_post(title=Form(...), body=Form(...), file: UploadFile | None = None,
+                      service: PostService = Depends(PostService)):
+    request = {
+        'title': title,
+        'body': body
+    }
     current_user_id = 1  # TODO: Will be replaced by current user
-    return service.create(request, current_user_id)
+    url = None
+    if file:
+        result = cloudinary.uploader.upload(file.file)
+        url = result.get("url", None)
+    return service.create(request, current_user_id, url)
 
 
 @router.get('', response_model=list[PostReadOut], status_code=status.HTTP_200_OK)
@@ -44,4 +56,3 @@ async def delete(id: int, service: PostService = Depends(PostService)):
         service.destroy(id, current_user_id)
         return {'msg': 'deleted successfully'}
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Post with id {id} does not exist')
-

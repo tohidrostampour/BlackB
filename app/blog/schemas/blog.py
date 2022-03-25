@@ -5,7 +5,6 @@ from pydantic import BaseModel, AnyUrl
 class BasePost(BaseModel):
     title: str
     body: str
-    file: AnyUrl
 
 
 class BaseComment(BaseModel):
@@ -19,14 +18,13 @@ class BaseTag(BaseModel):
 class PostCreateIn(BasePost):
     title: str
     body: str
-    file: AnyUrl
 
 
 class PostReadOut(BasePost):
     id: int
     title: str
     body: str
-    file: AnyUrl
+    file: str | None = None
 
     class Config:
         orm_mode = True

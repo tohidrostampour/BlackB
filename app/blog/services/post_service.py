@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
@@ -10,11 +12,11 @@ class PostService:
     def __init__(self, session: Session = Depends(get_db)):
         self.session = session
 
-    def create(self, post: PostCreateIn, owner_id: int):
+    def create(self, post: dict, owner_id: int, url: str):
         post = Post(
-            title=post.title,
-            body=post.body,
-            file=post.file,
+            title=post.get('title'),
+            body=post.get("body"),
+            file=str(url),
             owner_id=owner_id)
         self.session.add(post)
         self.session.commit()
@@ -33,6 +35,7 @@ class PostService:
         if not existing_post.first():
             return
         post.__dict__.update(owner_id=owner_id)
+        post.__dict__.update(updated_at=datetime.now(timezone.utc))
         existing_post.update(post.__dict__)
         self.session.commit()
         return True
