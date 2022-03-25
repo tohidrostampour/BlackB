@@ -34,6 +34,8 @@ SQLAlchemy = "==1.4.32"
 pytest = "*"
 requests = "*"
 alembic = "*"
+python-multipart = "*"
+cloudinary = "*"
 
 [dev-packages]
 
