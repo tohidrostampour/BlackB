@@ -7,27 +7,27 @@ from tests.conftest import client, app, db_session
 data_1 = {
     'title': 'test post creation',
     'body': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi nec',
-    'file': 'https://google.com'
 }
 data_2 = {
     'title': 'test num2',
     'body': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi nec',
-    'file': 'https://google.com'
 }
 
 POST_CREATION = '/blog/create'
 
+filename = 'test-pic.jpg'
+
 
 def test_create_post(client):
-    global data_1
-    response = client.post(POST_CREATION, json.dumps(data_1))
+    response = client.post(POST_CREATION, data=data_1)
+    print(response.json())
     assert response.status_code == status.HTTP_201_CREATED
     assert response.json()['title'] == data_1['title']
 
 
 def test_get_post(client):
     global data_1
-    client.post(POST_CREATION, json.dumps(data_1))
+    client.post(POST_CREATION, data=data_1)
 
     response = client.get('blog/1')
 
@@ -35,8 +35,8 @@ def test_get_post(client):
 
 
 def test_get_all(client):
-    client.post(POST_CREATION, json.dumps(data_1))
-    client.post(POST_CREATION, json.dumps(data_2))
+    client.post(POST_CREATION, data=data_1)
+    client.post(POST_CREATION, data=data_2)
 
     response = client.get('/blog')
 
@@ -46,7 +46,7 @@ def test_get_all(client):
 
 
 def test_update_post(client):
-    client.post(POST_CREATION, json.dumps(data_1))
+    client.post(POST_CREATION, data=data_1)
 
     data_1.update(title='testing update', body='testing update body text')
     print(data_1)
@@ -59,7 +59,7 @@ def test_update_post(client):
 
 
 def test_delete_post(client):
-    client.post(POST_CREATION, json.dumps(data_1))
+    client.post(POST_CREATION, data=data_1)
 
     response = client.delete('blog/1')
 

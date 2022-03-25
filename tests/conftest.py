@@ -8,12 +8,26 @@ from sqlalchemy.orm import sessionmaker
 
 import sys
 import os
+from pathlib import Path
+from dotenv import load_dotenv
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from db.base import Base
 from db.database import get_db
 from routers.base import api_router
+
+import cloudinary
+
+env_path = Path('../../') / '.env'
+
+load_dotenv(dotenv_path=env_path)
+cloudinary.config(
+    cloud_name=os.getenv("CLOUD_NAME"),
+    api_key=os.getenv("API_KEY"),
+    api_secret=os.getenv("API_SECRET"),
+
+)
 
 
 def start_app():
@@ -24,7 +38,7 @@ def start_app():
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test_db.db"
 engine = create_engine(
-        SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
 )
 # Use connect_args parameter only with sqlite
 SessionTesting = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -69,5 +83,3 @@ def client(app: FastAPI, db_session: SessionTesting) -> Generator[TestClient, An
 
     with TestClient(app) as client:
         yield client
-
-
