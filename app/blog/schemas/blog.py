@@ -1,4 +1,8 @@
 from __future__ import annotations
+
+import json
+
+from fastapi import Form
 from pydantic import BaseModel, AnyUrl
 
 
@@ -20,11 +24,55 @@ class PostCreateIn(BasePost):
     body: str
 
 
+class CommentCreateIn(BaseComment):
+    pass
+
+
+class CommentReadOut(BaseComment):
+    owner_id: int
+    comment_id: int | None = None
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
+class CommentUpdateIn(BaseComment):
+    pass
+
+
+class TagCreateIn(BaseModel):
+    tags: list[BaseTag]
+
+    @classmethod
+    def __get_validators__(cls):
+        yield cls.validate_to_json
+
+    @classmethod
+    def validate_to_json(cls, value):
+        if isinstance(value, str):
+            return cls(**json.loads(value))
+        return value
+
+
+class Tag(BaseTag):
+    class Config:
+        orm_mode = True
+
+
 class PostReadOut(BasePost):
     id: int
     title: str
     body: str
     file: str | None = None
+    tags: list[Tag] = []
+
+    class Config:
+        orm_mode = True
+
+
+class TagReadOut(BaseTag):
+    posts: list[PostReadOut] = []
 
     class Config:
         orm_mode = True
@@ -32,24 +80,3 @@ class PostReadOut(BasePost):
 
 class PostUpdateIn(BasePost):
     tags: list[TagReadOut]
-
-
-class CommentCreateIn(BaseComment):
-    post_id: int
-
-
-class CommentReadOut(BaseComment):
-    post_id: int
-
-
-class CommentUpdateIn(BaseComment):
-    pass
-
-
-class TagCreateIn(BaseTag):
-    post_id: int
-
-
-class TagReadOut(BaseComment):
-    post_id: int
-
