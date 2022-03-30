@@ -18,9 +18,17 @@ class User(Base):
     password = Column(String)
     is_active = Column(Boolean(), default=True)
     is_superuser = Column(Boolean(), default=False)
-    posts = relationship('Post', back_populates='owner')
-    comments = relationship('Comment', back_populates='comment_owner')
-    profile = relationship('Profile', back_populates='user', uselist=False)
+    posts = relationship('Post', back_populates='owner',
+                         cascade="all, delete",
+                         passive_deletes=True)
+    comments = relationship('Comment', back_populates='comment_owner',
+                            cascade="all, delete",
+                            passive_deletes=True
+                            )
+    profile = relationship('Profile', back_populates='user', uselist=False,
+                           cascade="all, delete",
+                           passive_deletes=True
+                           )
 
 
 class Profile(Base):
@@ -32,4 +40,4 @@ class Profile(Base):
     age = Column(Integer, nullable=True)
     phone = Column(String, nullable=True)
     user = relationship('User', back_populates='profile')
-    user_id = Column(Integer, ForeignKey('user.id'))
+    user_id = Column(Integer, ForeignKey('user.id', ondelete="CASCADE"))
