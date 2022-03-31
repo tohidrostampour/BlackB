@@ -11,8 +11,8 @@ class TagService:
         self.session = session
 
     def create(self, obj: list[BaseTag], post: Post):
-        obj = obj.dict()['tags']
         if obj:
+            obj = obj.dict()['tags']
             for item in obj:
                 tag = self.get(item.get('title')).first()
 
@@ -30,3 +30,6 @@ class TagService:
 
     def list(self):
         return self.session.query(Tag).all()
+
+    def list_posts(self, id: int):
+        return self.session.query(Tag).filter(Tag.id == id).first()
