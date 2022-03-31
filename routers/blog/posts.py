@@ -1,6 +1,8 @@
+import json
+
 from fastapi import APIRouter, Depends, status, HTTPException, UploadFile, Form, Body, Query
 
-from app.blog.schemas import PostReadOut, PostCreateIn, TagCreateIn
+from app.blog.schemas import PostReadOut, PostCreateIn, TagCreateIn, PostUpdateIn
 from app.blog.services import PostService, CommentService, TagService
 from app.blog.schemas import CommentCreateIn, CommentReadOut
 
@@ -13,11 +15,10 @@ router = APIRouter(
 
 
 @router.post('/create', response_model=PostReadOut, status_code=status.HTTP_201_CREATED)
-async def create_post(title: str = Form(...), body: str = Form(...), file: UploadFile | None = None,
-                          service: PostService = Depends(PostService),
-                          tags: TagCreateIn = Body(...),
-                          tag_service: TagService = Depends(TagService)):
-
+async def create(title: str = Form(...), body: str = Form(...), file: UploadFile | None = None,
+                 service: PostService = Depends(PostService),
+                 tags: TagCreateIn = Body(None),
+                 tag_service: TagService = Depends(TagService)):
     request = {
         'title': title,
         'body': body
@@ -29,29 +30,29 @@ async def create_post(title: str = Form(...), body: str = Form(...), file: Uploa
         url = result.get("url", None)
     post = service.create(request, current_user_id, url)
     tag_service.create(tags, post)
-
     return post
 
 
 @router.get('', response_model=list[PostReadOut], status_code=status.HTTP_200_OK)
-async def list_posts(service: PostService = Depends(PostService)):
-    return service.list()
+async def get_all(query: str | None = None, service: PostService = Depends(PostService)):
+    return service.list(query)
 
 
 @router.get('/{id}', status_code=status.HTTP_200_OK)
-async def get_post(id: int, service: PostService = Depends(PostService)):
+async def get(id: int, service: PostService = Depends(PostService)):
     post = service.get(id)
     comments = service.list_comments(id)
+
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='post does not exist')
     return {
-        'post': post,
-        'comments': comments
+        "post": post,
+        "comments": comments
     }
 
 
-@router.put('/{id}', status_code=status.HTTP_200_OK)
-async def update(id: int, request: PostCreateIn, service: PostService = Depends(PostService)):
+@router.patch('/{id}', status_code=status.HTTP_200_OK)
+async def update(id: int, request: PostUpdateIn, service: PostService = Depends(PostService)):
     current_user_id = 1
     post = service.put(id, request, current_user_id)
     if post:

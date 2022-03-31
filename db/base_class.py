@@ -2,12 +2,12 @@ from typing import Any
 
 from sqlalchemy.ext.declarative import as_declarative, declared_attr
 from sqlalchemy import Column, DateTime
-from datetime import datetime, timezone
+from datetime import datetime
 
 
 class TimestampMixin(object):
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=lambda: datetime.now())
+    updated_at = Column(DateTime, default=lambda: datetime.now())
 
 
 @as_declarative()
