@@ -1,7 +1,7 @@
 from typing import Any
 
 from fastapi import Depends
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.accounts.schemas import UserCreateInput
 from app.accounts.models import User
@@ -39,3 +39,9 @@ class UserService:
         if user:
             self.session.delete(user)
         return 'Not found'
+
+    def get_all_posts(self, pk: int):
+        return self.session.query(User).\
+            filter(User.id == pk)\
+            .filter(User.is_active == True)\
+            .options(joinedload(User.posts)).first()
