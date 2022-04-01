@@ -1,3 +1,4 @@
+from __future__ import annotations
 from pydantic import BaseModel, EmailStr
 
 from app.blog.schemas import PostReadOut
@@ -24,11 +25,19 @@ class UserUpdateInput(BaseUser):
     id: int
 
 
+class ProfileReadModel(BaseProfile):
+    user_id: int
+
+    class Config:
+        orm_mode = True
+
+
 class UserReadModel(BaseModel):
     id: int
     name: str
     username: str
     email: str
+    profile: ProfileReadModel
     posts: list[PostReadOut]
 
     class Config:
@@ -36,11 +45,6 @@ class UserReadModel(BaseModel):
 
 
 class ProfileUpdateInput(BaseProfile):
-    id: int
-
-
-class ProfileReadModel(BaseProfile):
-    id: int
-
-    class Config:
-        orm_mode = True
+    bio: str | None = None
+    age: str | None = None
+    phone: str | None = None

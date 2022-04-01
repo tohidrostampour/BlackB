@@ -44,4 +44,4 @@ class UserService:
         return self.session.query(User).\
             filter(User.id == pk)\
             .filter(User.is_active == True)\
-            .options(joinedload(User.posts)).first()
+            .options(joinedload(User.posts), joinedload(User.profile)).first()
