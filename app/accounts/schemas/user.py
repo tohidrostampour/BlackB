@@ -25,6 +25,11 @@ class UserUpdateInput(BaseUser):
     id: int
 
 
+class UserPasswordUpdate(BaseModel):
+    current_password: str
+    new_password: str
+
+
 class ProfileReadModel(BaseProfile):
     user_id: int
 

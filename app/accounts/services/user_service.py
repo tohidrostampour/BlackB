@@ -3,7 +3,7 @@ from typing import Any
 from fastapi import Depends
 from sqlalchemy.orm import Session, joinedload
 
-from app.accounts.schemas import UserCreateInput
+from app.accounts.schemas import UserCreateInput, UserPasswordUpdate
 from app.accounts.models import User
 from app.accounts.services.profile_service import ProfileService
 from core.hashing import Hash
@@ -45,3 +45,13 @@ class UserService:
             filter(User.id == pk)\
             .filter(User.is_active == True)\
             .options(joinedload(User.posts), joinedload(User.profile)).first()
+
+    def update_password(self, obj: UserPasswordUpdate, user_id: int):
+        user = self.session.query(User).filter(User.id == user_id).first()
+        if not Hash.verify(obj.current_password, user.password):
+            return
+        user.password = Hash.bcrypt(obj.new_password)
+        self.session.commit()
+        self.session.refresh(user)
+
+        return True
