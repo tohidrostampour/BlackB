@@ -5,7 +5,7 @@ from fastapi import Depends
 from sqlalchemy.orm import Session, joinedload
 
 from app.accounts.models import Profile
-from app.accounts.schemas import ProfileUpdateInput
+from app.accounts.schemas import ProfileUpdate
 from db.database import get_db
 
 
@@ -32,7 +32,7 @@ class ProfileService:
             self.session.delete(profile)
         return 'Not found'
 
-    def put(self, obj: ProfileUpdateInput, user_id: int):
+    def put(self, obj: ProfileUpdate, user_id: int):
         existing_prf = self.session.query(Profile).filter(Profile.user_id == user_id)
         if not existing_prf.first():
             return

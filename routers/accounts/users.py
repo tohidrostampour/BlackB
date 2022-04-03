@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.accounts.services import ProfileService, UserService
-from app.accounts.schemas import ProfileUpdateInput, ProfileReadModel, UserPasswordUpdate, UserUpdateInput
+from app.accounts.schemas import ProfileUpdate, ProfileRead, UserPasswordUpdate, UserUpdate
 
 router = APIRouter(
     prefix='/users'
 )
 
 
-@router.get('/{user_id}', response_model=ProfileReadModel)
+@router.get('/{user_id}', response_model=ProfileRead)
 async def get_user_profile(user_id: int, service: ProfileService = Depends(ProfileService)):
     current_user_id = 1
     if not user_id == current_user_id:
@@ -20,7 +20,7 @@ async def get_user_profile(user_id: int, service: ProfileService = Depends(Profi
 
 
 @router.patch('/profile')
-async def update_user_profile(request: ProfileUpdateInput,
+async def update_user_profile(request: ProfileUpdate,
                               service: ProfileService = Depends(ProfileService)):
     current_user_id = 1
 
@@ -40,7 +40,7 @@ async def update_password(request: UserPasswordUpdate, service: UserService = De
 
 
 @router.patch('/credentials')
-async def update_credentials(request: UserUpdateInput, service: UserService = Depends(UserService)):
+async def update_credentials(request: UserUpdate, service: UserService = Depends(UserService)):
     current_user_id = 1
     user_update = service.update_credentials(request, current_user_id)
     if not user_update:

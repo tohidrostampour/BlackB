@@ -1,7 +1,8 @@
 from __future__ import annotations
 from pydantic import BaseModel, EmailStr
 
-from app.blog.schemas import PostReadOut
+from app.accounts.schemas import ProfileRead
+from app.blog.schemas import PostRead
 
 
 class BaseUser(BaseModel):
@@ -11,17 +12,11 @@ class BaseUser(BaseModel):
     password: str
 
 
-class BaseProfile(BaseModel):
-    bio: str | None = None
-    age: int | None = None
-    phone: str | None = None
-
-
-class UserCreateInput(BaseUser):
+class UserCreate(BaseUser):
     pass
 
 
-class UserUpdateInput(BaseModel):
+class UserUpdate(BaseModel):
     name: str | None = None
     username: str | None = None
     email: EmailStr | None = None
@@ -32,26 +27,14 @@ class UserPasswordUpdate(BaseModel):
     new_password: str
 
 
-class ProfileReadModel(BaseProfile):
-    user_id: int
-
-    class Config:
-        orm_mode = True
-
-
-class UserReadModel(BaseModel):
+class UserRead(BaseModel):
     id: int
     name: str
     username: str
     email: str
-    profile: ProfileReadModel = None
-    posts: list[PostReadOut]
+    profile: ProfileRead = None
+    posts: list[PostRead]
 
     class Config:
         orm_mode = True
 
-
-class ProfileUpdateInput(BaseProfile):
-    bio: str | None = None
-    age: str | None = None
-    phone: str | None = None

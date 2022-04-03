@@ -4,7 +4,7 @@ from fastapi import Depends
 from sqlalchemy.orm import Session, joinedload
 
 from app.blog.models.blog import Post, Comment
-from app.blog.schemas import PostCreateIn, PostUpdateIn
+from app.blog.schemas import PostCreate, PostUpdate
 from db.database import get_db
 
 
@@ -32,7 +32,7 @@ class PostService:
     def get(self, id: int):
         return self.session.query(Post).filter(Post.id == id).options(joinedload(Post.tags)).first()
 
-    def put(self, id: int, post: PostUpdateIn, owner_id: int):
+    def put(self, id: int, post: PostUpdate, owner_id: int):
         existing_post = self.session.query(Post).filter(Post.id == id)
         if not existing_post.first():
             return

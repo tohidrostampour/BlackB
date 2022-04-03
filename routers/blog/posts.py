@@ -2,9 +2,9 @@ import json
 
 from fastapi import APIRouter, Depends, status, HTTPException, UploadFile, Form, Body, Query
 
-from app.blog.schemas import PostReadOut, PostCreateIn, TagCreateIn, PostUpdateIn
+from app.blog.schemas import PostRead, PostCreate, TagCreate, PostUpdate
 from app.blog.services import PostService, CommentService, TagService
-from app.blog.schemas import CommentCreateIn, CommentReadOut
+from app.blog.schemas import CommentCreate, CommentRead
 
 import cloudinary
 import cloudinary.uploader
@@ -14,10 +14,10 @@ router = APIRouter(
 )
 
 
-@router.post('/create', response_model=PostReadOut, status_code=status.HTTP_201_CREATED)
+@router.post('/create', response_model=PostRead, status_code=status.HTTP_201_CREATED)
 async def create(title: str = Form(...), body: str = Form(...), file: UploadFile | None = None,
                  service: PostService = Depends(PostService),
-                 tags: TagCreateIn = Body(None),
+                 tags: TagCreate = Body(None),
                  tag_service: TagService = Depends(TagService)):
     request = {
         'title': title,
@@ -33,7 +33,7 @@ async def create(title: str = Form(...), body: str = Form(...), file: UploadFile
     return post
 
 
-@router.get('', response_model=list[PostReadOut], status_code=status.HTTP_200_OK)
+@router.get('', response_model=list[PostRead], status_code=status.HTTP_200_OK)
 async def get_all(query: str | None = None, service: PostService = Depends(PostService)):
     return service.list(query)
 
@@ -52,7 +52,7 @@ async def get(id: int, service: PostService = Depends(PostService)):
 
 
 @router.patch('/{id}', status_code=status.HTTP_200_OK)
-async def update(id: int, request: PostUpdateIn, service: PostService = Depends(PostService)):
+async def update(id: int, request: PostUpdate, service: PostService = Depends(PostService)):
     current_user_id = 1
     post = service.put(id, request, current_user_id)
     if post:
@@ -70,14 +70,14 @@ async def delete(id: int, service: PostService = Depends(PostService)):
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Post with id {id} does not exist')
 
 
-@router.post('/{post_id}/comment', response_model=CommentReadOut, status_code=status.HTTP_201_CREATED)
-async def create_comment(request: CommentCreateIn, post_id: int, service: CommentService = Depends(CommentService)):
+@router.post('/{post_id}/comment', response_model=CommentRead, status_code=status.HTTP_201_CREATED, tags=['comments'])
+async def create_comment(request: CommentCreate, post_id: int, service: CommentService = Depends(CommentService)):
     current_user_id = 1
     return service.create(request, current_user_id, post_id)
 
 
-@router.post('/{post_id}/{comment_id}/reply', status_code=status.HTTP_201_CREATED)
-async def create_reply(request: CommentCreateIn, post_id: int, comment_id: int,
+@router.post('/{post_id}/{comment_id}/reply', status_code=status.HTTP_201_CREATED, tags=['comments'])
+async def create_reply(request: CommentCreate, post_id: int, comment_id: int,
                        service: CommentService = Depends(CommentService)):
     current_user_id = 1
     return service.create(request, current_user_id, post_id, comment_id)

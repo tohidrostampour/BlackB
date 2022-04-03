@@ -2,7 +2,7 @@ from fastapi import Depends
 from sqlalchemy.orm import Session
 
 from app.blog.models.blog import Comment
-from app.blog.schemas import CommentCreateIn
+from app.blog.schemas import CommentCreate
 from db.database import get_db
 
 
@@ -10,7 +10,7 @@ class CommentService:
     def __init__(self, session: Session = Depends(get_db)):
         self.session = session
 
-    def create(self, obj: CommentCreateIn, owner_id: int, post_id: int, comment_id: int | None = None):
+    def create(self, obj: CommentCreate, owner_id: int, post_id: int, comment_id: int | None = None):
         if comment_id:
             comment = Comment(
                 body=obj.body,

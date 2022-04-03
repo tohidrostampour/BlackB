@@ -1,1 +1,8 @@
-from .user import UserCreateInput, UserUpdateInput, UserReadModel, ProfileUpdateInput, ProfileReadModel
+from .user import (
+    UserCreate, UserUpdate,
+    UserRead, UserPasswordUpdate
+)
+
+from .profile import (
+    ProfileUpdate, ProfileRead
+)

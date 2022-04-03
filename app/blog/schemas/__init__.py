@@ -1,5 +1,9 @@
 from .blog import (
-    PostReadOut, PostCreateIn, PostUpdateIn, PostsInTagOut,
-    CommentReadOut, CommentCreateIn, CommentUpdateIn,
-    TagCreateIn, TagReadOut, BaseTag, Tag
+    PostRead, PostCreate,
+    PostUpdate, TagList,
+    TagCreate, TagRead
+)
+from .comment import (
+    CommentRead, CommentCreate,
+    CommentUpdate
 )

@@ -5,7 +5,7 @@ from sqlalchemy.dialects.postgresql import psycopg2
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import exc
 
-from app.accounts.schemas import UserCreateInput, UserPasswordUpdate, UserUpdateInput
+from app.accounts.schemas import UserCreate, UserPasswordUpdate, UserUpdate
 from app.accounts.models import User
 from app.accounts.services.profile_service import ProfileService
 from core.hashing import Hash
@@ -17,7 +17,7 @@ class UserService:
         self.session = session
         self.profile_service = profile_service
 
-    def create(self, obj: UserCreateInput):
+    def create(self, obj: UserCreate):
         user = User(
             name=obj.name,
             username=obj.username,
@@ -59,7 +59,7 @@ class UserService:
 
         return True
 
-    def update_credentials(self, obj: UserUpdateInput, user_id: int):
+    def update_credentials(self, obj: UserUpdate, user_id: int):
         existing_user = self.session.query(User).filter(User.id == user_id)
         if not existing_user.first():
             return
