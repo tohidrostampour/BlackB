@@ -38,11 +38,20 @@ class PostUpdate(BasePost):
     tags: list[TagCreate] | None = None
 
 
+class TagList(BaseModel):
+    id: int
+    title: str
+
+    class Config:
+        orm_mode = True
+
+
 class PostRead(BasePost):
     id: int
     title: str
     body: str
     file: str | None = None
+    tags: list[TagList] | None = None
 
     class Config:
         orm_mode = True
@@ -56,12 +65,6 @@ class TagRead(BaseTag):
         orm_mode = True
 
 
-class TagList(BaseModel):
-    id: int
-    title: str
-
-    class Config:
-        orm_mode = True
 
 
 
