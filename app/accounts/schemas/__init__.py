@@ -1,8 +1,6 @@
 from .user import (
     UserCreate, UserUpdate,
-    UserRead, UserPasswordUpdate
-)
-
-from .profile import (
+    UserRead, UserPasswordUpdate,
     ProfileUpdate, ProfileRead
 )
+

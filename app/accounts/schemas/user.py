@@ -1,7 +1,6 @@
 from __future__ import annotations
 from pydantic import BaseModel, EmailStr
 
-from app.accounts.schemas import ProfileRead
 from app.blog.schemas import PostRead
 
 
@@ -10,6 +9,25 @@ class BaseUser(BaseModel):
     username: str
     email: EmailStr
     password: str
+
+
+class BaseProfile(BaseModel):
+    bio: str | None = None
+    age: int | None = None
+    phone: str | None = None
+
+
+class ProfileRead(BaseProfile):
+    user_id: int
+
+    class Config:
+        orm_mode = True
+
+
+class ProfileUpdate(BaseProfile):
+    bio: str | None = None
+    age: str | None = None
+    phone: str | None = None
 
 
 class UserCreate(BaseUser):
@@ -37,4 +55,3 @@ class UserRead(BaseModel):
 
     class Config:
         orm_mode = True
-

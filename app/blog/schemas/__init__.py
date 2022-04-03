@@ -1,7 +1,7 @@
 from .blog import (
     PostRead, PostCreate,
     PostUpdate, TagList,
-    TagCreate, TagRead
+    TagCreate, TagRead, BaseTag
 )
 from .comment import (
     CommentRead, CommentCreate,
