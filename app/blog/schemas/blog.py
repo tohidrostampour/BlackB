@@ -1,10 +1,6 @@
-from __future__ import annotations
-
-import datetime
 import json
 
-from fastapi import Form
-from pydantic import BaseModel, AnyUrl
+from pydantic import BaseModel
 
 
 class BasePost(BaseModel):
@@ -12,40 +8,16 @@ class BasePost(BaseModel):
     body: str
 
 
-class BaseComment(BaseModel):
-    body: str
-
-
 class BaseTag(BaseModel):
     title: str
 
 
-class CommentCreateIn(BaseComment):
-    pass
-
-
-class CommentReadOut(BaseComment):
-    owner_id: int
-    comment_id: int | None = None
-    id: int
-
-    class Config:
-        orm_mode = True
-
-
-class CommentUpdateIn(BaseComment):
-    pass
-
-
-class Tag(BaseModel):
-    id: int
+class PostCreate(BasePost):
     title: str
-
-    class Config:
-        orm_mode = True
+    body: str
 
 
-class TagCreateIn(BaseModel):
+class TagCreate(BaseModel):
     tags: list[BaseTag] | None = None
 
     @classmethod
@@ -59,41 +31,41 @@ class TagCreateIn(BaseModel):
         return value
 
 
-class PostCreateIn(BasePost):
-    title: str
-    body: str
-
-
-class PostReadOut(BasePost):
-    id: int
-    title: str
-    body: str
-    file: str | None = None
-
-    class Config:
-        orm_mode = True
-
-
-class PostsInTagOut(BasePost):
-    id: int
-    title: str
-    body: str
-    file: str | None = None
-
-    class Config:
-        orm_mode = True
-
-
-class TagReadOut(BaseTag):
-    id: int
-    posts: list[PostsInTagOut] = []
-
-    class Config:
-        orm_mode = True
-
-
-class PostUpdateIn(BasePost):
+class PostUpdate(BasePost):
     title: str | None = None
     body: str | None = None
     file: str | None = None
-    tags: list[TagCreateIn] | None = None
+    tags: list[TagCreate] | None = None
+
+
+class PostRead(BasePost):
+    id: int
+    title: str
+    body: str
+    file: str | None = None
+
+    class Config:
+        orm_mode = True
+
+
+class TagRead(BaseTag):
+    id: int
+    posts: list[PostRead] = []
+
+    class Config:
+        orm_mode = True
+
+
+class TagList(BaseModel):
+    id: int
+    title: str
+
+    class Config:
+        orm_mode = True
+
+
+
+
+
+
+
