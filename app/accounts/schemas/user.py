@@ -12,17 +12,19 @@ class BaseUser(BaseModel):
 
 
 class BaseProfile(BaseModel):
-    bio: str
-    age: int
-    phone: str
+    bio: str | None = None
+    age: int | None = None
+    phone: str | None = None
 
 
 class UserCreateInput(BaseUser):
     pass
 
 
-class UserUpdateInput(BaseUser):
-    id: int
+class UserUpdateInput(BaseModel):
+    name: str | None = None
+    username: str | None = None
+    email: EmailStr | None = None
 
 
 class UserPasswordUpdate(BaseModel):
@@ -42,7 +44,7 @@ class UserReadModel(BaseModel):
     name: str
     username: str
     email: str
-    profile: ProfileReadModel
+    profile: ProfileReadModel = None
     posts: list[PostReadOut]
 
     class Config:

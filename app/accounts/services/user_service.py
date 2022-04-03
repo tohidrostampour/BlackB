@@ -1,9 +1,11 @@
-from typing import Any
+from datetime import datetime
 
 from fastapi import Depends
+from sqlalchemy.dialects.postgresql import psycopg2
 from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import exc
 
-from app.accounts.schemas import UserCreateInput, UserPasswordUpdate
+from app.accounts.schemas import UserCreateInput, UserPasswordUpdate, UserUpdateInput
 from app.accounts.models import User
 from app.accounts.services.profile_service import ProfileService
 from core.hashing import Hash
@@ -50,8 +52,23 @@ class UserService:
         user = self.session.query(User).filter(User.id == user_id).first()
         if not Hash.verify(obj.current_password, user.password):
             return
+
         user.password = Hash.bcrypt(obj.new_password)
         self.session.commit()
         self.session.refresh(user)
 
         return True
+
+    def update_credentials(self, obj: UserUpdateInput, user_id: int):
+        existing_user = self.session.query(User).filter(User.id == user_id)
+        if not existing_user.first():
+            return
+        try:
+            obj.__dict__.update(id=user_id)
+            obj.__dict__.update(updated_at=datetime.now())
+            existing_user.update(obj.dict(exclude_defaults=True, exclude_none=True))
+            self.session.commit()
+            return True
+        except exc.IntegrityError as e:
+            pass
+
