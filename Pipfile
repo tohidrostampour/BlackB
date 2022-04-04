@@ -36,6 +36,7 @@ requests = "*"
 alembic = "*"
 python-multipart = "*"
 cloudinary = "*"
+python-jose = "*"
 
 [dev-packages]
 
