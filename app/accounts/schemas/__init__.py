@@ -3,4 +3,7 @@ from .user import (
     UserRead, UserPasswordUpdate,
     ProfileUpdate, ProfileRead
 )
+from .auth import (
+    Token, TokenData
+)
 

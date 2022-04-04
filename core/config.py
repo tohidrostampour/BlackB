@@ -18,11 +18,16 @@ class Settings:
     POSTGRES_HOST: str = os.getenv("POSTGRES_HOST", 5432)
     POSTGRES_DATABASE: str = os.getenv("POSTGRES_DATABASE")
     DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{5432}/{POSTGRES_DATABASE}"
+
     cloudinary.config(
         cloud_name=os.getenv("CLOUD_NAME"),
         api_key=os.getenv("API_KEY"),
         api_secret=os.getenv("API_SECRET"),
     )
+
+    SECRET_KEY = os.getenv("SECRET_KEY")
+    ALGORITHM = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
 settings = Settings()

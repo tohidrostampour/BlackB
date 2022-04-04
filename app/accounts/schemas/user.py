@@ -50,6 +50,7 @@ class UserRead(BaseModel):
     name: str
     username: str
     email: str
+    is_active: bool
     profile: ProfileRead = None
     posts: list[PostRead]
 
