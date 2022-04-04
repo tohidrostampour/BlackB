@@ -31,6 +31,12 @@ watchgod = "==0.8"
 websockets = "==10.2"
 PyYAML = "==6.0"
 SQLAlchemy = "==1.4.32"
+pytest = "*"
+requests = "*"
+alembic = "*"
+python-multipart = "*"
+cloudinary = "*"
+python-jose = "*"
 
 [dev-packages]
 
