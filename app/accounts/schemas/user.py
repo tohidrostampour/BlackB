@@ -1,4 +1,7 @@
 from __future__ import annotations
+
+import datetime
+
 from pydantic import BaseModel, EmailStr
 
 from app.blog.schemas import PostRead
@@ -19,6 +22,8 @@ class BaseProfile(BaseModel):
 
 class ProfileRead(BaseProfile):
     user_id: int
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
 
     class Config:
         orm_mode = True
@@ -38,6 +43,9 @@ class UserUpdate(BaseModel):
     name: str | None = None
     username: str | None = None
     email: EmailStr | None = None
+
+    class Config:
+        orm_mode = True
 
 
 class UserPasswordUpdate(BaseModel):

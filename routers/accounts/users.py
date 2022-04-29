@@ -23,7 +23,7 @@ async def get_user_profile(user_id: int,
     return profile
 
 
-@router.patch('/profile')
+@router.put('/profile', response_model=ProfileRead)
 async def update_user_profile(request: ProfileUpdate,
                               service: ProfileService = Depends(ProfileService),
                               current_user: User = Depends(get_current_active_user)):
@@ -33,10 +33,10 @@ async def update_user_profile(request: ProfileUpdate,
     if not profile_update:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="Bad request, Try again!")
-    return {'msg': 'Profile updated successfully!'}
+    return profile_update
 
 
-@router.post('/update-password')
+@router.put('/update-password')
 async def update_password(request: UserPasswordUpdate,
                           service: UserService = Depends(UserService),
                           current_user: User = Depends(get_current_active_user)):
@@ -48,7 +48,7 @@ async def update_password(request: UserPasswordUpdate,
     return {'msg': 'Password updated successfully!'}
 
 
-@router.patch('/credentials')
+@router.put('/credentials', response_model=UserRead)
 async def update_credentials(request: UserUpdate,
                              service: UserService = Depends(UserService),
                              current_user: User = Depends(get_current_active_user)):
@@ -58,4 +58,4 @@ async def update_credentials(request: UserUpdate,
     if not user_update:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail='User with that email or username exists, Try again!')
-    return {'msg': 'Updated successfully'}
+    return user_update
