@@ -1,15 +1,15 @@
 from datetime import datetime
 
-from fastapi import Depends
-from sqlalchemy.dialects.postgresql import psycopg2
+from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import exc
 
-from app.accounts.schemas import UserCreate, UserPasswordUpdate, UserUpdate
 from app.accounts.models import User
+from app.accounts.schemas import UserCreate, UserPasswordUpdate, UserUpdate
 from app.accounts.services.profile_service import ProfileService
 from core.hashing import Hash
 from db.database import get_db
+from lib.errors import NotFoundException
 
 
 class UserService:
@@ -17,13 +17,8 @@ class UserService:
         self.session = session
         self.profile_service = profile_service
 
-    def create(self, obj: UserCreate):
-        user = User(
-            name=obj.name,
-            username=obj.username,
-            email=obj.email,
-            password=Hash.bcrypt(obj.password)
-        )
+    def create(self, user_input: UserCreate):
+        user = User(user_input)
         self.session.add(user)
         self.session.commit()
         self.session.refresh(user)
@@ -37,40 +32,37 @@ class UserService:
         pass
 
     def destroy(self, pk):
-        user = self.session.query(User).filter(id=pk)
-        if user:
-            self.session.delete(user)
-        return 'Not found'
+        user: User = self.get_or_not_found(pk)
+        self.session.delete(user)
+        self.session.commit()
 
     def get_all_posts(self, pk: int):
-        return self.session.query(User).\
-            filter(User.id == pk)\
-            .filter(User.is_active == True)\
+        return self.session.query(User). \
+            filter(User.id == pk) \
+            .filter(User.is_active == True) \
             .options(joinedload(User.posts), joinedload(User.profile)).first()
 
     def update_password(self, obj: UserPasswordUpdate, user_id: int):
-        user = self.session.query(User).filter(User.id == user_id).first()
+        user: User = self.session.query(User).filter(User.id == user_id).first()
         if not Hash.verify(obj.current_password, user.password):
-            return
+            raise HTTPException(
+                detail="Password is wrong, try again!",
+                status_code=status.HTTP_401_UNAUTHORIZED
+            )
 
         user.password = Hash.bcrypt(obj.new_password)
         self.session.commit()
         self.session.refresh(user)
 
-        return True
+        return user
 
-    def update_credentials(self, obj: UserUpdate, user_id: int):
-        existing_user = self.session.query(User).filter(User.id == user_id)
-        if not existing_user.first():
-            return
-        try:
-            obj.__dict__.update(id=user_id)
-            obj.__dict__.update(updated_at=datetime.now())
-            existing_user.update(obj.dict(exclude_defaults=True, exclude_none=True))
-            self.session.commit()
-            return True
-        except exc.IntegrityError as e:
-            pass
+    def update_credentials(self, user_input: UserUpdate, user_id: int):
+
+        user: User = self.session.query(User).filter(User.id == user_id).first()
+        user.update(user_input)
+        self.session.commit()
+        self.session.refresh(user)
+        return user
 
     def get_user_by_email(self, email: str):
         return self.session.query(User).filter(User.email == email).first()
@@ -82,7 +74,15 @@ class UserService:
         user = self.get_user_by_username(username)
 
         if not user:
-            return False
+            return
         if not Hash.verify(password, user.password):
-            return False
+            return
+
         return user
+
+    def get_or_not_found(self, id: int) -> User:
+        user: User = self.session.query(User).filter(User.id == id).first()
+        if user:
+            return user
+        else:
+            raise NotFoundException(f"user with id {id} not found")
