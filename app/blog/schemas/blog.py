@@ -48,6 +48,7 @@ class TagList(BaseModel):
 
 class PostRead(BasePost):
     id: int
+    owner_id: int
     title: str
     body: str
     file: str | None = None
